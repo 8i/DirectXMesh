@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 
+#if !defined(__LINUX__) && !defined(_PSY_LINUX_)
 #if !defined(__d3d11_h__) && !defined(__d3d11_x_h__) && !defined(__d3d12_h__) && !defined(__d3d12_x_h__)
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
@@ -28,6 +29,9 @@
 #endif
 
 #include <directxmath.h>
+#endif
+
+#include <JntLinuxTypes.h>
 
 #define DIRECTX_MESH_VERSION 130
 
@@ -36,24 +40,24 @@ namespace DirectX
 {
     //---------------------------------------------------------------------------------
     // DXGI Format Utilities
-    bool __cdecl IsValidVB(_In_ DXGI_FORMAT fmt);
-    bool __cdecl IsValidIB(_In_ DXGI_FORMAT fmt);
-    size_t __cdecl BytesPerElement(_In_ DXGI_FORMAT fmt);
+    bool _CDECL IsValidVB(_In_ DXGI_FORMAT fmt);
+    bool _CDECL IsValidIB(_In_ DXGI_FORMAT fmt);
+    size_t _CDECL BytesPerElement(_In_ DXGI_FORMAT fmt);
 
 
     //---------------------------------------------------------------------------------
     // Input Layout Descriptor Utilities
 #if defined(__d3d11_h__) || defined(__d3d11_x_h__)
-    bool __cdecl IsValid(_In_reads_(nDecl) const D3D11_INPUT_ELEMENT_DESC* vbDecl, _In_ size_t nDecl);
-    void __cdecl ComputeInputLayout(
+    bool _CDECL IsValid(_In_reads_(nDecl) const D3D11_INPUT_ELEMENT_DESC* vbDecl, _In_ size_t nDecl);
+    void _CDECL ComputeInputLayout(
         _In_reads_(nDecl) const D3D11_INPUT_ELEMENT_DESC* vbDecl, _In_ size_t nDecl,
         _Out_writes_opt_(nDecl) uint32_t* offsets,
         _Out_writes_opt_(D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT) uint32_t* strides);
 #endif
 
 #if defined(__d3d12_h__) || defined(__d3d12_x_h__)
-    bool __cdecl IsValid(const D3D12_INPUT_LAYOUT_DESC& vbDecl);
-    void __cdecl ComputeInputLayout(
+    bool _CDECL IsValid(const D3D12_INPUT_LAYOUT_DESC& vbDecl);
+    void _CDECL ComputeInputLayout(
         const D3D12_INPUT_LAYOUT_DESC& vbDecl,
         _Out_writes_opt_(vbDecl.NumElements) uint32_t* offsets,
         _Out_writes_opt_(D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT) uint32_t* strides);
@@ -61,22 +65,22 @@ namespace DirectX
 
     //---------------------------------------------------------------------------------
     // Attribute Utilities
-    std::vector<std::pair<size_t, size_t>> __cdecl ComputeSubsets(_In_reads_opt_(nFaces) const uint32_t* attributes, _In_ size_t nFaces);
+    std::vector<std::pair<size_t, size_t>> _CDECL ComputeSubsets(_In_reads_opt_(nFaces) const uint32_t* attributes, _In_ size_t nFaces);
         // Returns a list of face offset,counts for attribute groups
 
     //---------------------------------------------------------------------------------
     // Mesh Optimization Utilities
-    void __cdecl ComputeVertexCacheMissRate(
+    void _CDECL ComputeVertexCacheMissRate(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces, _In_ size_t nVerts,
         _In_ size_t cacheSize, _Out_ float& acmr, _Out_ float& atvr);
-    void __cdecl ComputeVertexCacheMissRate(
+    void _CDECL ComputeVertexCacheMissRate(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces, _In_ size_t nVerts,
         _In_ size_t cacheSize, _Out_ float& acmr, _Out_ float& atvr);
         // Compute the average cache miss ratio and average triangle vertex reuse for the post-transform vertex cache
 
     //---------------------------------------------------------------------------------
     // Vertex Buffer Reader/Writer
-
+#if !defined(__LINUX__) && !defined(_PSY_LINUX_)
     class VBReader
     {
     public:
@@ -90,28 +94,28 @@ namespace DirectX
         ~VBReader();
 
     #if defined(__d3d11_h__) || defined(__d3d11_x_h__)
-        HRESULT __cdecl Initialize(_In_reads_(nDecl) const D3D11_INPUT_ELEMENT_DESC* vbDecl, _In_ size_t nDecl);
+        HRESULT _CDECL Initialize(_In_reads_(nDecl) const D3D11_INPUT_ELEMENT_DESC* vbDecl, _In_ size_t nDecl);
             // Does not support VB decls with D3D11_INPUT_PER_INSTANCE_DATA
     #endif
 
     #if defined(__d3d12_h__) || defined(__d3d12_x_h__)
-        HRESULT __cdecl Initialize(const D3D12_INPUT_LAYOUT_DESC& vbDecl);
+        HRESULT _CDECL Initialize(const D3D12_INPUT_LAYOUT_DESC& vbDecl);
             // Does not support VB decls with D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA
     #endif
 
-        HRESULT __cdecl AddStream(_In_reads_bytes_(stride*nVerts) const void* vb, _In_ size_t nVerts, _In_ size_t inputSlot, _In_ size_t stride = 0);
+        HRESULT _CDECL AddStream(_In_reads_bytes_(stride*nVerts) const void* vb, _In_ size_t nVerts, _In_ size_t inputSlot, _In_ size_t stride = 0);
             // Add vertex buffer to reader
 
-        HRESULT __cdecl Read(_Out_writes_(count) XMVECTOR* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Read(_Out_writes_(count) XMVECTOR* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
             // Extracts data elements from vertex buffer
 
-        HRESULT __cdecl Read(_Out_writes_(count) float* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
-        HRESULT __cdecl Read(_Out_writes_(count) XMFLOAT2* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
-        HRESULT __cdecl Read(_Out_writes_(count) XMFLOAT3* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
-        HRESULT __cdecl Read(_Out_writes_(count) XMFLOAT4* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Read(_Out_writes_(count) float* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Read(_Out_writes_(count) XMFLOAT2* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Read(_Out_writes_(count) XMFLOAT3* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Read(_Out_writes_(count) XMFLOAT4* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
             // Helpers for data extraction
 
-        void __cdecl Release();
+        void _CDECL Release();
 
     #if defined(__d3d11_h__) || defined(__d3d11_x_h__)
         const D3D11_INPUT_ELEMENT_DESC* GetElement(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const
@@ -119,11 +123,11 @@ namespace DirectX
             return GetElement11(semanticName, semanticIndex);
         }
 
-        const D3D11_INPUT_ELEMENT_DESC* __cdecl GetElement11(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
+        const D3D11_INPUT_ELEMENT_DESC* _CDECL GetElement11(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
     #endif
 
     #if defined(__d3d12_h__) || defined(__d3d12_x_h__)
-        const D3D12_INPUT_ELEMENT_DESC* __cdecl GetElement12(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
+        const D3D12_INPUT_ELEMENT_DESC* _CDECL GetElement12(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
     #endif
 
     private:
@@ -146,40 +150,40 @@ namespace DirectX
         ~VBWriter();
 
     #if defined(__d3d11_h__) || defined(__d3d11_x_h__)
-        HRESULT __cdecl Initialize(_In_reads_(nDecl) const D3D11_INPUT_ELEMENT_DESC* vbDecl, _In_ size_t nDecl);
+        HRESULT _CDECL Initialize(_In_reads_(nDecl) const D3D11_INPUT_ELEMENT_DESC* vbDecl, _In_ size_t nDecl);
             // Does not support VB decls with D3D11_INPUT_PER_INSTANCE_DATA
     #endif
 
     #if defined(__d3d12_h__) || defined(__d3d12_x_h__)
-        HRESULT __cdecl Initialize(const D3D12_INPUT_LAYOUT_DESC& vbDecl);
+        HRESULT _CDECL Initialize(const D3D12_INPUT_LAYOUT_DESC& vbDecl);
             // Does not support VB decls with D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA
     #endif
 
-        HRESULT __cdecl AddStream(_Out_writes_bytes_(stride*nVerts) void* vb, _In_ size_t nVerts, _In_ size_t inputSlot, _In_ size_t stride = 0);
+        HRESULT _CDECL AddStream(_Out_writes_bytes_(stride*nVerts) void* vb, _In_ size_t nVerts, _In_ size_t inputSlot, _In_ size_t stride = 0);
             // Add vertex buffer to writer
 
-        HRESULT __cdecl Write(_In_reads_(count) const XMVECTOR* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Write(_In_reads_(count) const XMVECTOR* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
             // Inserts data elements into vertex buffer
 
-        HRESULT __cdecl Write(_In_reads_(count) const float* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
-        HRESULT __cdecl Write(_In_reads_(count) const XMFLOAT2* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
-        HRESULT __cdecl Write(_In_reads_(count) const XMFLOAT3* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
-        HRESULT __cdecl Write(_In_reads_(count) const XMFLOAT4* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Write(_In_reads_(count) const float* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Write(_In_reads_(count) const XMFLOAT2* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Write(_In_reads_(count) const XMFLOAT3* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
+        HRESULT _CDECL Write(_In_reads_(count) const XMFLOAT4* buffer, _In_z_ const char* semanticName, _In_ unsigned int semanticIndex, _In_ size_t count, bool x2bias = false) const;
             // Helpers for data insertion
 
-        void __cdecl Release();
+        void _CDECL Release();
 
     #if defined(__d3d11_h__) || defined(__d3d11_x_h__)
-        const D3D11_INPUT_ELEMENT_DESC* __cdecl GetElement(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const
+        const D3D11_INPUT_ELEMENT_DESC* _CDECL GetElement(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const
         {
             return GetElement11(semanticName, semanticIndex);
         }
 
-        const D3D11_INPUT_ELEMENT_DESC* __cdecl GetElement11(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
+        const D3D11_INPUT_ELEMENT_DESC* _CDECL GetElement11(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
     #endif
 
     #if defined(__d3d12_h__) || defined(__d3d12_x_h__)
-        const D3D12_INPUT_ELEMENT_DESC* __cdecl GetElement12(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
+        const D3D12_INPUT_ELEMENT_DESC* _CDECL GetElement12(_In_z_ const char* semanticName, _In_ unsigned int semanticIndex) const;
     #endif
 
     private:
@@ -188,17 +192,18 @@ namespace DirectX
 
         std::unique_ptr<Impl> pImpl;
     };
+#endif //__LINUX__
 
     //---------------------------------------------------------------------------------
     // Adjacency Computation
 
-    HRESULT __cdecl GenerateAdjacencyAndPointReps(
+    HRESULT _CDECL GenerateAdjacencyAndPointReps(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, _In_ size_t nVerts,
         _In_ float epsilon,
         _Out_writes_opt_(nVerts) uint32_t* pointRep,
         _Out_writes_opt_(nFaces * 3) uint32_t* adjacency);
-    HRESULT __cdecl GenerateAdjacencyAndPointReps(
+    HRESULT _CDECL GenerateAdjacencyAndPointReps(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, _In_ size_t nVerts,
         _In_ float epsilon,
@@ -206,24 +211,24 @@ namespace DirectX
         _Out_writes_opt_(nFaces * 3) uint32_t* adjacency);
         // If pointRep is null, it still generates them internally as they are needed for the final adjacency computation
 
-    HRESULT __cdecl ConvertPointRepsToAdjacency(
+    HRESULT _CDECL ConvertPointRepsToAdjacency(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, _In_ size_t nVerts,
         _In_reads_opt_(nVerts) const uint32_t* pointRep,
         _Out_writes_(nFaces * 3) uint32_t* adjacency);
-    HRESULT __cdecl ConvertPointRepsToAdjacency(
+    HRESULT _CDECL ConvertPointRepsToAdjacency(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, _In_ size_t nVerts,
         _In_reads_opt_(nVerts) const uint32_t* pointRep,
         _Out_writes_(nFaces * 3) uint32_t* adjacency);
         // If pointRep is null, assumes an identity
 
-    HRESULT __cdecl GenerateGSAdjacency(
+    HRESULT _CDECL GenerateGSAdjacency(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const uint32_t* pointRep,
         _In_reads_(nFaces * 3) const uint32_t* adjacency, _In_ size_t nVerts,
         _Out_writes_(nFaces * 6) uint16_t* indicesAdj);
-    HRESULT __cdecl GenerateGSAdjacency(
+    HRESULT _CDECL GenerateGSAdjacency(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const uint32_t* pointRep,
         _In_reads_(nFaces * 3) const uint32_t* adjacency, _In_ size_t nVerts,
@@ -248,53 +253,53 @@ namespace DirectX
             // Vertices are clock-wise (defaults to CCW)
     };
 
-    HRESULT __cdecl ComputeNormals(
+    HRESULT _CDECL ComputeNormals(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, _In_ size_t nVerts,
         _In_ DWORD flags,
         _Out_writes_(nVerts) XMFLOAT3* normals);
-    HRESULT __cdecl ComputeNormals(
+    HRESULT _CDECL ComputeNormals(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions, _In_ size_t nVerts,
         _In_ DWORD flags,
         _Out_writes_(nVerts) XMFLOAT3* normals);
         // Computes vertex normals
 
-    HRESULT __cdecl ComputeTangentFrame(
+    HRESULT _CDECL ComputeTangentFrame(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions,
         _In_reads_(nVerts) const XMFLOAT3* normals,
         _In_reads_(nVerts) const XMFLOAT2* texcoords, _In_ size_t nVerts,
         _Out_writes_opt_(nVerts) XMFLOAT3* tangents,
         _Out_writes_opt_(nVerts) XMFLOAT3* bitangents);
-    HRESULT __cdecl ComputeTangentFrame(
+    HRESULT _CDECL ComputeTangentFrame(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions,
         _In_reads_(nVerts) const XMFLOAT3* normals,
         _In_reads_(nVerts) const XMFLOAT2* texcoords, _In_ size_t nVerts,
         _Out_writes_opt_(nVerts) XMFLOAT3* tangents,
         _Out_writes_opt_(nVerts) XMFLOAT3* bitangents);
-    HRESULT __cdecl ComputeTangentFrame(
+    HRESULT _CDECL ComputeTangentFrame(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions,
         _In_reads_(nVerts) const XMFLOAT3* normals,
         _In_reads_(nVerts) const XMFLOAT2* texcoords, _In_ size_t nVerts,
         _Out_writes_opt_(nVerts) XMFLOAT4* tangents,
         _Out_writes_opt_(nVerts) XMFLOAT3* bitangents);
-    HRESULT __cdecl ComputeTangentFrame(
+    HRESULT _CDECL ComputeTangentFrame(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions,
         _In_reads_(nVerts) const XMFLOAT3* normals,
         _In_reads_(nVerts) const XMFLOAT2* texcoords, _In_ size_t nVerts,
         _Out_writes_opt_(nVerts) XMFLOAT4* tangents,
         _Out_writes_opt_(nVerts) XMFLOAT3* bitangents);
-    HRESULT __cdecl ComputeTangentFrame(
+    HRESULT _CDECL ComputeTangentFrame(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions,
         _In_reads_(nVerts) const XMFLOAT3* normals,
         _In_reads_(nVerts) const XMFLOAT2* texcoords, _In_ size_t nVerts,
         _Out_writes_(nVerts) XMFLOAT4* tangents);
-    HRESULT __cdecl ComputeTangentFrame(
+    HRESULT _CDECL ComputeTangentFrame(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nVerts) const XMFLOAT3* positions,
         _In_reads_(nVerts) const XMFLOAT3* normals,
@@ -325,22 +330,22 @@ namespace DirectX
             // Checks that neighbors are symmetric (requires adjacency)
     };
 
-    HRESULT __cdecl Validate(
+    HRESULT _CDECL Validate(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_ size_t nVerts, _In_reads_opt_(nFaces * 3) const uint32_t* adjacency,
         _In_ DWORD flags, _In_opt_ std::wstring* msgs = nullptr);
-    HRESULT __cdecl Validate(
+    HRESULT _CDECL Validate(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_ size_t nVerts, _In_reads_opt_(nFaces * 3) const uint32_t* adjacency,
         _In_ DWORD flags, _In_opt_ std::wstring* msgs = nullptr);
         // Checks the mesh for common problems, return 'S_OK' if no problems were found
 
-    HRESULT __cdecl Clean(
+    HRESULT _CDECL Clean(
         _Inout_updates_all_(nFaces * 3) uint16_t* indices, _In_ size_t nFaces,
         _In_ size_t nVerts, _Inout_updates_all_opt_(nFaces * 3) uint32_t* adjacency,
         _In_reads_opt_(nFaces) const uint32_t* attributes,
         _Inout_ std::vector<uint32_t>& dupVerts, _In_ bool breakBowties = false);
-    HRESULT __cdecl Clean(
+    HRESULT _CDECL Clean(
         _Inout_updates_all_(nFaces * 3) uint32_t* indices, _In_ size_t nFaces,
         _In_ size_t nVerts, _Inout_updates_all_opt_(nFaces * 3) uint32_t* adjacency,
         _In_reads_opt_(nFaces) const uint32_t* attributes,
@@ -350,22 +355,22 @@ namespace DirectX
     //---------------------------------------------------------------------------------
     // Mesh utilities
 
-    HRESULT __cdecl WeldVertices(
+    HRESULT _CDECL WeldVertices(
         _Inout_updates_all_(nFaces * 3) uint16_t* indices, _In_ size_t nFaces,
         _In_ size_t nVerts, _In_reads_(nVerts) const uint32_t* pointRep,
         _Out_writes_opt_(nVerts) uint32_t* vertexRemap,
-        _In_ std::function<bool __cdecl(uint32_t v0, uint32_t v1)> weldTest);
-    HRESULT __cdecl WeldVertices(
+        _In_ std::function<bool _CDECL(uint32_t v0, uint32_t v1)> weldTest);
+    HRESULT _CDECL WeldVertices(
         _Inout_updates_all_(nFaces * 3) uint32_t* indices, _In_ size_t nFaces,
         _In_ size_t nVerts, _In_reads_(nVerts) const uint32_t* pointRep,
         _Out_writes_opt_(nVerts) uint32_t* vertexRemap,
-        _In_ std::function<bool __cdecl(uint32_t v0, uint32_t v1)> weldTest);
+        _In_ std::function<bool _CDECL(uint32_t v0, uint32_t v1)> weldTest);
         // Welds vertices together based on a test function
 
     //---------------------------------------------------------------------------------
     // Mesh Optimization
 
-    HRESULT __cdecl AttributeSort(
+    HRESULT _CDECL AttributeSort(
         _In_ size_t nFaces, _Inout_updates_all_(nFaces) uint32_t* attributes,
         _Out_writes_(nFaces) uint32_t* faceRemap);
         // Reorders faces by attribute id
@@ -383,58 +388,58 @@ namespace DirectX
             // Indicates no vertex cache optimization, only reordering into strips
     };
 
-    HRESULT __cdecl OptimizeFaces(
+    HRESULT _CDECL OptimizeFaces(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nFaces * 3) const uint32_t* adjacency,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t vertexCache = OPTFACES_V_DEFAULT,
         _In_ uint32_t restart = OPTFACES_R_DEFAULT);
-    HRESULT __cdecl OptimizeFaces(
+    HRESULT _CDECL OptimizeFaces(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nFaces * 3) const uint32_t* adjacency,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t vertexCache = OPTFACES_V_DEFAULT,
         _In_ uint32_t restart = OPTFACES_R_DEFAULT);
-    HRESULT __cdecl OptimizeFacesLRU(
+    HRESULT _CDECL OptimizeFacesLRU(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t lruCacheSize = OPTFACES_LRU_DEFAULT);
-    HRESULT __cdecl OptimizeFacesLRU(
+    HRESULT _CDECL OptimizeFacesLRU(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t lruCacheSize = OPTFACES_LRU_DEFAULT);
         // Reorders faces to increase hit rate of vertex caches
 
-    HRESULT __cdecl OptimizeFacesEx(
+    HRESULT _CDECL OptimizeFacesEx(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nFaces * 3) const uint32_t* adjacency,
         _In_reads_(nFaces) const uint32_t* attributes,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t vertexCache = OPTFACES_V_DEFAULT,
         _In_ uint32_t restart = OPTFACES_R_DEFAULT);
-    HRESULT __cdecl OptimizeFacesEx(
+    HRESULT _CDECL OptimizeFacesEx(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nFaces * 3) const uint32_t* adjacency,
         _In_reads_(nFaces) const uint32_t* attributes,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t vertexCache = OPTFACES_V_DEFAULT,
         _In_ uint32_t restart = OPTFACES_R_DEFAULT);
-    HRESULT __cdecl OptimizeFacesLRUEx(
+    HRESULT _CDECL OptimizeFacesLRUEx(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces,
         _In_reads_(nFaces) const uint32_t* attributes,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t lruCacheSize = OPTFACES_LRU_DEFAULT);
-    HRESULT __cdecl OptimizeFacesLRUEx(
+    HRESULT _CDECL OptimizeFacesLRUEx(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces,
         _In_reads_(nFaces) const uint32_t* attributes,
         _Out_writes_(nFaces) uint32_t* faceRemap,
         _In_ uint32_t lruCacheSize = OPTFACES_LRU_DEFAULT);
         // Attribute group version of OptimizeFaces
 
-    HRESULT __cdecl OptimizeVertices(
+    HRESULT _CDECL OptimizeVertices(
         _In_reads_(nFaces * 3) const uint16_t* indices, _In_ size_t nFaces, _In_ size_t nVerts,
         _Out_writes_(nVerts) uint32_t* vertexRemap, _Out_opt_ size_t* trailingUnused = nullptr);
-    HRESULT __cdecl OptimizeVertices(
+    HRESULT _CDECL OptimizeVertices(
         _In_reads_(nFaces * 3) const uint32_t* indices, _In_ size_t nFaces, _In_ size_t nVerts,
         _Out_writes_(nVerts) uint32_t* vertexRemap, _Out_opt_ size_t* trailingUnused = nullptr);
         // Reorders vertices in order of use
@@ -442,78 +447,78 @@ namespace DirectX
     //---------------------------------------------------------------------------------
     // Remap functions
 
-    HRESULT __cdecl ReorderIB(
+    HRESULT _CDECL ReorderIB(
         _In_reads_(nFaces * 3) const uint16_t* ibin, _In_ size_t nFaces,
         _In_reads_(nFaces) const uint32_t* faceRemap,
         _Out_writes_(nFaces * 3) uint16_t* ibout);
-    HRESULT __cdecl ReorderIB(
+    HRESULT _CDECL ReorderIB(
         _Inout_updates_all_(nFaces * 3) uint16_t* ib, _In_ size_t nFaces,
         _In_reads_(nFaces) const uint32_t* faceRemap);
-    HRESULT __cdecl ReorderIB(
+    HRESULT _CDECL ReorderIB(
         _In_reads_(nFaces * 3) const uint32_t* ibin, _In_ size_t nFaces,
         _In_reads_(nFaces) const uint32_t* faceRemap,
         _Out_writes_(nFaces * 3) uint32_t* ibout);
-    HRESULT __cdecl ReorderIB(
+    HRESULT _CDECL ReorderIB(
         _Inout_updates_all_(nFaces * 3) uint32_t* ib, _In_ size_t nFaces,
         _In_reads_(nFaces) const uint32_t* faceRemap);
         // Applies a face remap reordering to an index buffer
 
-    HRESULT __cdecl ReorderIBAndAdjacency(
+    HRESULT _CDECL ReorderIBAndAdjacency(
         _In_reads_(nFaces * 3) const uint16_t* ibin, _In_ size_t nFaces, _In_reads_(nFaces * 3) const uint32_t* adjin,
         _In_reads_(nFaces) const uint32_t* faceRemap,
         _Out_writes_(nFaces * 3) uint16_t* ibout, _Out_writes_(nFaces * 3) uint32_t* adjout);
-    HRESULT __cdecl ReorderIBAndAdjacency(
+    HRESULT _CDECL ReorderIBAndAdjacency(
         _Inout_updates_all_(nFaces * 3) uint16_t* ib, _In_ size_t nFaces, _Inout_updates_all_(nFaces * 3) uint32_t* adj,
         _In_reads_(nFaces) const uint32_t* faceRemap);
-    HRESULT __cdecl ReorderIBAndAdjacency(
+    HRESULT _CDECL ReorderIBAndAdjacency(
         _In_reads_(nFaces * 3) const uint32_t* ibin, _In_ size_t nFaces, _In_reads_(nFaces * 3) const uint32_t* adjin,
         _In_reads_(nFaces) const uint32_t* faceRemap,
         _Out_writes_(nFaces * 3) uint32_t* ibout, _Out_writes_(nFaces * 3) uint32_t* adjout);
-    HRESULT __cdecl ReorderIBAndAdjacency(
+    HRESULT _CDECL ReorderIBAndAdjacency(
         _Inout_updates_all_(nFaces * 3) uint32_t* ib, _In_ size_t nFaces, _Inout_updates_all_(nFaces * 3) uint32_t* adj,
         _In_reads_(nFaces) const uint32_t* faceRemap);
         // Applies a face remap reordering to an index buffer and adjacency
 
-    HRESULT __cdecl FinalizeIB(
+    HRESULT _CDECL FinalizeIB(
         _In_reads_(nFaces * 3) const uint16_t* ibin, _In_ size_t nFaces,
         _In_reads_(nVerts) const uint32_t* vertexRemap, _In_ size_t nVerts,
         _Out_writes_(nFaces * 3) uint16_t* ibout);
-    HRESULT __cdecl FinalizeIB(
+    HRESULT _CDECL FinalizeIB(
         _Inout_updates_all_(nFaces * 3) uint16_t* ib, _In_ size_t nFaces,
         _In_reads_(nVerts) const uint32_t* vertexRemap, _In_ size_t nVerts);
-    HRESULT __cdecl FinalizeIB(
+    HRESULT _CDECL FinalizeIB(
         _In_reads_(nFaces * 3) const uint32_t* ibin, _In_ size_t nFaces,
         _In_reads_(nVerts) const uint32_t* vertexRemap, _In_ size_t nVerts,
         _Out_writes_(nFaces * 3) uint32_t* ibout);
-    HRESULT __cdecl FinalizeIB(
+    HRESULT _CDECL FinalizeIB(
         _Inout_updates_all_(nFaces * 3) uint32_t* ib, _In_ size_t nFaces,
         _In_reads_(nVerts) const uint32_t* vertexRemap, _In_ size_t nVerts);
         // Applies a vertex remap reordering to an index buffer
 
-    HRESULT __cdecl FinalizeVB(
+    HRESULT _CDECL FinalizeVB(
         _In_reads_bytes_(nVerts*stride) const void* vbin, _In_ size_t stride, _In_ size_t nVerts,
         _In_reads_opt_(nDupVerts) const uint32_t* dupVerts, _In_ size_t nDupVerts,
         _In_reads_opt_(nVerts + nDupVerts) const uint32_t* vertexRemap,
         _Out_writes_bytes_((nVerts + nDupVerts)*stride) void* vbout);
-    HRESULT __cdecl FinalizeVB(
+    HRESULT _CDECL FinalizeVB(
         _Inout_updates_bytes_all_(nVerts*stride) void* vb, _In_ size_t stride, _In_ size_t nVerts,
         _In_reads_(nVerts) const uint32_t* vertexRemap);
         // Applies a vertex remap and/or a vertex duplication set to a vertex buffer
 
-    HRESULT __cdecl FinalizeVBAndPointReps(
+    HRESULT _CDECL FinalizeVBAndPointReps(
         _In_reads_bytes_(nVerts*stride) const void* vbin, _In_ size_t stride, _In_ size_t nVerts,
         _In_reads_(nVerts) const uint32_t* prin,
         _In_reads_opt_(nDupVerts) const uint32_t* dupVerts, _In_ size_t nDupVerts,
         _In_reads_opt_(nVerts + nDupVerts) const uint32_t* vertexRemap,
         _Out_writes_bytes_((nVerts + nDupVerts)*stride) void* vbout,
         _Out_writes_(nVerts + nDupVerts) uint32_t* prout);
-    HRESULT __cdecl FinalizeVBAndPointReps(
+    HRESULT _CDECL FinalizeVBAndPointReps(
         _Inout_updates_bytes_all_(nVerts*stride) void* vb, _In_ size_t stride, _In_ size_t nVerts,
         _Inout_updates_all_(nVerts) uint32_t* pointRep,
         _In_reads_(nVerts) const uint32_t* vertexRemap);
         // Applies a vertex remap and/or a vertex duplication set to a vertex buffer and point representatives
 
-    HRESULT __cdecl CompactVB(
+    HRESULT _CDECL CompactVB(
         _In_reads_bytes_(nVerts*stride) const void* vbin, _In_ size_t stride, _In_ size_t nVerts,
         _In_ size_t trailingUnused,
         _In_reads_opt_(nVerts) const uint32_t* vertexRemap,

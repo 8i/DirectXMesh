@@ -1,3 +1,12 @@
+This branch has a cmake project setup to support compilation of the DirectXMesh library
+on Windows x64 and Linux x64.
+
+Required Headers:
+    - DirectXMesh.h
+    - DirectXMesh.inl
+    - JntLinuxTypes.h
+    - dxgiformat.h
+
 DIRECTX MESH LIBRARY (DirectXMesh)
 ------------------------------------
 
