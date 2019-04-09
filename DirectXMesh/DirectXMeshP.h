@@ -58,6 +58,7 @@
 #define NOHELP
 #pragma warning(pop)
 
+#ifdef WIN32
 #ifndef _WIN32_WINNT_WIN10
 #define _WIN32_WINNT_WIN10 0x0A00
 #endif
@@ -78,6 +79,7 @@
 
 #include <directxmath.h>
 #include <directxpackedvector.h>
+#endif
 
 #include <assert.h>
 #include <malloc.h>
@@ -87,7 +89,11 @@
 #include <string>
 #include <unordered_map>
 
-#include "directxmesh.h"
+#ifndef WIN32
+#include <cstring>
+#endif
+
+#include "DirectXMesh.h"
 
 #include "scoped.h"
 

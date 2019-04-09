@@ -8,7 +8,7 @@
 
 #if defined(__LINUX__) || defined(_PSY_LINUX_)
 
-//#include <dxgiformat.h>
+#include <dxgiformat.h>
 
 #define _Use_decl_annotations_
 #define _In_
@@ -20,10 +20,13 @@
 #define _Out_
 #define _Out_opt_
 #define _Out_writes_(size)
+#define _Out_writes_opt_(size)
 #define _Out_writes_bytes_(size)
 #define _Inout_
 #define _Inout_opt_
 #define _Inout_updates_all_(size)
+#define _Inout_updates_all_opt_(size)
+#define _Inout_updates_bytes_all_(size)
 #define _When_(expr, annotes)
 #define _Printf_format_string_
 #define _Analysis_assume_(expr)
@@ -42,6 +45,7 @@ typedef long HRESULT;
 
 //HRESULT Codes
 #define S_OK                             ((HRESULT)0L)
+#define S_FALSE                          ((HRESULT)1L)
 #define E_FAIL                           ((HRESULT)0x80004005L)
 #define E_OUTOFMEMORY                    ((HRESULT)0x8007000EL)
 #define E_INVALIDARG                     ((HRESULT)0x80070057L)
@@ -69,7 +73,8 @@ typedef long HRESULT;
 typedef unsigned long DWORD;
 typedef const char* LPCSTR;
 typedef void* HANDLE;
-//typedef long long ptrdiff_t;
+typedef long long LONG_PTR;
+#define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 
 //DirectXMath Port
 
@@ -276,6 +281,8 @@ XMGLOBALCONST XMVECTORF32 g_XMIdentityR0            = { { { 1.0f, 0.0f, 0.0f, 0.
 XMGLOBALCONST XMVECTORF32 g_XMIdentityR1            = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
 XMGLOBALCONST XMVECTORF32 g_XMIdentityR2            = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
 XMGLOBALCONST XMVECTORF32 g_XMIdentityR3            = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
+XMGLOBALCONST XMVECTORF32 g_XMOne                   = { { { 1.0f, 1.0f, 1.0f, 1.0f } } };
+XMGLOBALCONST XMVECTORF32 g_XMNegativeOne           = { { { -1.0f, -1.0f, -1.0f, -1.0f } } };
 
 //------------------------------------------------------------------------------
 // Return a vector with all elements equaling zero
@@ -484,6 +491,69 @@ inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y)
 
 //------------------------------------------------------------------------------
 
+inline bool XM_CALLCONV XMVector4LessOrEqual
+(
+    FXMVECTOR V1, 
+    FXMVECTOR V2
+)
+{
+    return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1]) && (V1.vector4_f32[2] <= V2.vector4_f32[2]) && (V1.vector4_f32[3] <= V2.vector4_f32[3])) != 0);
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XM_CALLCONV XMVectorMin
+(
+    FXMVECTOR V1, 
+    FXMVECTOR V2
+)
+{
+    XMVECTORF32 Result = { { {
+            (V1.vector4_f32[0] < V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0],
+            (V1.vector4_f32[1] < V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1],
+            (V1.vector4_f32[2] < V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2],
+            (V1.vector4_f32[3] < V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3]
+        } } };
+    return Result.v;
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XM_CALLCONV XMVectorMax
+(
+    FXMVECTOR V1, 
+    FXMVECTOR V2
+)
+{
+
+    XMVECTORF32 Result = { { {
+            (V1.vector4_f32[0] > V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0],
+            (V1.vector4_f32[1] > V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1],
+            (V1.vector4_f32[2] > V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2],
+            (V1.vector4_f32[3] > V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3]
+        } } };
+    return Result.v;
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XM_CALLCONV XMVectorClamp
+(
+    FXMVECTOR V, 
+    FXMVECTOR Min, 
+    FXMVECTOR Max
+)
+{
+    assert(XMVector4LessOrEqual(Min, Max));
+
+    XMVECTOR Result;
+    Result = XMVectorMax(Min, V);
+    Result = XMVectorMin(Max, Result);
+    return Result;
+}
+
+//------------------------------------------------------------------------------
+
 inline XMVECTOR XM_CALLCONV XMVectorNegate
 (
     FXMVECTOR V
@@ -615,6 +685,35 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
             V1.vector4_f32[3] * V2.vector4_f32[3] + V3.vector4_f32[3]
         } } };
     return Result.v;
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XM_CALLCONV XMVectorACos
+(
+    FXMVECTOR V
+)
+{
+    // 7-degree minimax approximation
+
+    XMVECTORF32 Result = { { {
+            acosf(V.vector4_f32[0]),
+            acosf(V.vector4_f32[1]),
+            acosf(V.vector4_f32[2]),
+            acosf(V.vector4_f32[3])
+        } } };
+    return Result.v;
+}
+
+//------------------------------------------------------------------------------
+
+inline bool XM_CALLCONV XMVector2Less
+(
+    FXMVECTOR V1, 
+    FXMVECTOR V2
+)
+{
+    return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1])) != 0);
 }
 
 //------------------------------------------------------------------------------
