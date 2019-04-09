@@ -22,6 +22,7 @@ set (DX_MESH_SRC
     )
 	
 set (DX_MESH_HDR
+    ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshTypes.h
     ${CMAKE_CURRENT_LIST_DIR}/DirectXMesh.h
     ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshP.h
     ${CMAKE_CURRENT_LIST_DIR}/DirectXMesh.inl
