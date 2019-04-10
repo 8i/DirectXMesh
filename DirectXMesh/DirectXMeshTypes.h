@@ -9,6 +9,8 @@
 #if defined(__LINUX__) || defined(_PSY_LINUX_)
 
 #include <dxgiformat.h>
+#include <wchar.h>
+#include <cstdarg>
 
 #define _Use_decl_annotations_
 #define _In_
@@ -68,7 +70,12 @@ typedef long HRESULT;
 
 #define __max(a,b) (((a) > (b)) ? (a) : (b))
 #define __min(a,b) (((a) < (b)) ? (a) : (b))
-
+int swprintf_s(wchar_t* buff, const wchar_t* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    vswprintf(buff, sizeof(buff)/sizeof(*buff), fmt, args);
+};
 
 typedef unsigned long DWORD;
 typedef const char* LPCSTR;
@@ -124,6 +131,17 @@ __attribute__((align(16))) struct XMVECTORF32
 
     inline operator XMVECTOR() const { return v; }
     inline operator const float*() const { return f; }
+};
+
+__attribute((align(16))) struct XMVECTORU32
+{
+    union
+    {
+        uint32_t u[4];
+        XMVECTOR v;
+    };
+
+    inline operator XMVECTOR() const { return v; }
 };
 
 //------------------------------------------------------------------------------
@@ -184,6 +202,21 @@ struct XMFLOAT4
 
     XM_CONSTEXPR XMFLOAT4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMFLOAT4(_In_reads_(4) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
+};
+
+// 4D Vector; 32 bit floating point components aligned on a 16 byte boundary
+__attribute__((align(16))) struct XMFLOAT4A : public XMFLOAT4
+{
+    XMFLOAT4A() = default;
+
+    XMFLOAT4A(const XMFLOAT4A&) = default;
+    XMFLOAT4A& operator=(const XMFLOAT4A&) = default;
+
+    XMFLOAT4A(XMFLOAT4A&&) = default;
+    XMFLOAT4A& operator=(XMFLOAT4A&&) = default;
+
+    XM_CONSTEXPR XMFLOAT4A(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
+    explicit XMFLOAT4A(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
 };
 
 struct XMMATRIX
@@ -282,6 +315,7 @@ XMGLOBALCONST XMVECTORF32 g_XMIdentityR1            = { { { 0.0f, 1.0f, 0.0f, 0.
 XMGLOBALCONST XMVECTORF32 g_XMIdentityR2            = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
 XMGLOBALCONST XMVECTORF32 g_XMIdentityR3            = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
 XMGLOBALCONST XMVECTORF32 g_XMOne                   = { { { 1.0f, 1.0f, 1.0f, 1.0f } } };
+XMGLOBALCONST XMVECTORF32 g_XMZero                  = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
 XMGLOBALCONST XMVECTORF32 g_XMNegativeOne           = { { { -1.0f, -1.0f, -1.0f, -1.0f } } };
 
 //------------------------------------------------------------------------------
@@ -471,12 +505,57 @@ inline void XM_CALLCONV XMStoreFloat4
 }
 
 //------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XM_CALLCONV XMStoreFloat4A
+(
+    XMFLOAT4A*   pDestination, 
+    FXMVECTOR     V
+)
+{
+    assert(pDestination);
+    assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
+
+    pDestination->x = V.vector4_f32[0];
+    pDestination->y = V.vector4_f32[1];
+    pDestination->z = V.vector4_f32[2];
+    pDestination->w = V.vector4_f32[3];
+}
+//------------------------------------------------------------------------------
 // Return the X component in an FPU register. 
 inline float XM_CALLCONV XMVectorGetX(FXMVECTOR V)
 {
     return V.vector4_f32[0];
 }
 
+// Return the Y component in an FPU register. 
+inline float XM_CALLCONV XMVectorGetY(FXMVECTOR V)
+{
+    return V.vector4_f32[1];
+}
+
+// Return the Z component in an FPU register. 
+inline float XM_CALLCONV XMVectorGetZ(FXMVECTOR V)
+{
+    return V.vector4_f32[2];
+}
+
+// Return the W component in an FPU register. 
+inline float XM_CALLCONV XMVectorGetW(FXMVECTOR V)
+{
+    return V.vector4_f32[3];
+}
+
+// Sets the X component of a vector to a passed floating point value
+inline XMVECTOR XM_CALLCONV XMVectorSetX(FXMVECTOR V, float x)
+{
+    XMVECTORF32 U = { { {
+            x,
+            V.vector4_f32[1],
+            V.vector4_f32[2],
+            V.vector4_f32[3]
+        } } };
+    return U.v;
+}
 // Sets the Y component of a vector to a passed floating point value
 inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y)
 {
@@ -488,7 +567,28 @@ inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y)
         } } };
     return U.v;
 }
-
+// Sets the Z component of a vector to a passed floating point value
+inline XMVECTOR XM_CALLCONV XMVectorSetZ(FXMVECTOR V, float z)
+{
+    XMVECTORF32 U = { { {
+            V.vector4_f32[0],
+            V.vector4_f32[1],
+            z,
+            V.vector4_f32[3]
+        } } };
+    return U.v;
+}
+// Sets the W component of a vector to a passed floating point value
+inline XMVECTOR XM_CALLCONV XMVectorSetW(FXMVECTOR V, float w)
+{
+    XMVECTORF32 U = { { {
+            V.vector4_f32[0],
+            V.vector4_f32[1],
+            V.vector4_f32[2],
+            w
+        } } };
+    return U.v;
+}
 //------------------------------------------------------------------------------
 
 inline bool XM_CALLCONV XMVector4LessOrEqual
@@ -707,6 +807,23 @@ inline XMVECTOR XM_CALLCONV XMVectorACos
 
 //------------------------------------------------------------------------------
 
+inline XMVECTOR XM_CALLCONV XMVectorMergeXY
+(
+    FXMVECTOR V1, 
+    FXMVECTOR V2
+)
+{
+    XMVECTORU32 Result = { { {
+            V1.vector4_u32[0],
+            V2.vector4_u32[0],
+            V1.vector4_u32[1],
+            V2.vector4_u32[1],
+        } } };
+    return Result.v;
+}
+
+//------------------------------------------------------------------------------
+
 inline bool XM_CALLCONV XMVector2Less
 (
     FXMVECTOR V1, 
@@ -714,6 +831,17 @@ inline bool XM_CALLCONV XMVector2Less
 )
 {
     return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1])) != 0);
+}
+
+//------------------------------------------------------------------------------
+
+inline bool XM_CALLCONV XMVector3Less
+(
+    FXMVECTOR V1, 
+    FXMVECTOR V2
+)
+{
+    return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1]) && (V1.vector4_f32[2] < V2.vector4_f32[2])) != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -890,6 +1018,46 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
 
     XMVECTOR W = XMVectorSplatW(Result);
     return XMVectorDivide( Result, W );
+}
+
+//------------------------------------------------------------------------------
+inline XMVECTOR XM_CALLCONV XMVectorPermute
+(
+    FXMVECTOR V1,
+    FXMVECTOR V2,
+    uint32_t PermuteX,
+    uint32_t PermuteY,
+    uint32_t PermuteZ,
+    uint32_t PermuteW
+)
+{
+    assert( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
+    _Analysis_assume_( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
+
+    const uint32_t *aPtr[2];
+    aPtr[0] = reinterpret_cast<const uint32_t*>(&V1);
+    aPtr[1] = reinterpret_cast<const uint32_t*>(&V2);
+
+    XMVECTOR Result;
+    auto pWork = reinterpret_cast<uint32_t*>(&Result);
+
+    const uint32_t i0 = PermuteX & 3;
+    const uint32_t vi0 = PermuteX >> 2;
+    pWork[0] = aPtr[vi0][i0];
+
+    const uint32_t i1 = PermuteY & 3;
+    const uint32_t vi1 = PermuteY >> 2;
+    pWork[1] = aPtr[vi1][i1];
+
+    const uint32_t i2 = PermuteZ & 3;
+    const uint32_t vi2 = PermuteZ >> 2;
+    pWork[2] = aPtr[vi2][i2];
+
+    const uint32_t i3 = PermuteW & 3;
+    const uint32_t vi3 = PermuteW >> 2;
+    pWork[3] = aPtr[vi3][i3];
+
+    return Result;
 }
 
 //------------------------------------------------------------------------------
@@ -1401,6 +1569,18 @@ inline XMVECTOR XM_CALLCONV operator*
 }
 
 #endif /* !_XM_NO_XMVECTOR_OVERLOADS_ */
+
+// General permute template
+template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t PermuteW>
+    inline XMVECTOR     XM_CALLCONV     XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2)
+{
+    static_assert(PermuteX <= 7, "PermuteX template parameter out of range");
+    static_assert(PermuteY <= 7, "PermuteY template parameter out of range");
+    static_assert(PermuteZ <= 7, "PermuteZ template parameter out of range");
+    static_assert(PermuteW <= 7, "PermuteW template parameter out of range");
+
+    return XMVectorPermute( V1, V2, PermuteX, PermuteY, PermuteZ, PermuteW );
+}
 
 } /* namespace DirectX */
 

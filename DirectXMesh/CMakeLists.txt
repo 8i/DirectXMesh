@@ -17,8 +17,8 @@ set (DX_MESH_SRC
     ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshTangentFrame.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshUtil.cpp
     ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshValidate.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshVBReader.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshVBWriter.cpp
+#    ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshVBReader.cpp
+#    ${CMAKE_CURRENT_LIST_DIR}/DirectXMeshVBWriter.cpp
     )
 	
 set (DX_MESH_HDR

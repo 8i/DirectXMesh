@@ -80,7 +80,7 @@ namespace DirectX
 
     //---------------------------------------------------------------------------------
     // Vertex Buffer Reader/Writer
-
+#ifndef __LINUX__
     class VBReader
     {
     public:
@@ -192,6 +192,7 @@ namespace DirectX
 
         std::unique_ptr<Impl> pImpl;
     };
+#endif //__LINUX__
 
     //---------------------------------------------------------------------------------
     // Adjacency Computation
