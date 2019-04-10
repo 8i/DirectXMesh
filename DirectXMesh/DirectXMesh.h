@@ -31,7 +31,7 @@
 #include <directxmath.h>
 #endif
 
-#include <DirectXMeshTypes.h>
+#include <JntLinuxTypes.h>
 
 #define DIRECTX_MESH_VERSION 130
 
