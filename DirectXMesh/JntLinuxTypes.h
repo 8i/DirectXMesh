@@ -70,7 +70,7 @@ typedef long HRESULT;
 
 #define __max(a,b) (((a) > (b)) ? (a) : (b))
 #define __min(a,b) (((a) < (b)) ? (a) : (b))
-int swprintf_s(wchar_t* buff, const wchar_t* fmt, ...)
+static int swprintf_s(wchar_t* buff, const wchar_t* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
