@@ -58,7 +58,7 @@
 #define NOHELP
 #pragma warning(pop)
 
-#ifdef WIN32
+#ifndef __LINUX__
 #ifndef _WIN32_WINNT_WIN10
 #define _WIN32_WINNT_WIN10 0x0A00
 #endif
@@ -89,7 +89,7 @@
 #include <string>
 #include <unordered_map>
 
-#ifndef WIN32
+#ifdef __LINUX__
 #include <cstring>
 #endif
 

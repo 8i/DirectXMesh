@@ -13,7 +13,7 @@
 #include <memory>
 #include <malloc.h>
 
-#ifndef WIN32
+#ifdef __LINUX__
 #include <stdlib.h>
 #define _aligned_free(ptr) free(ptr)
 #define _aligned_malloc(size, alignment) aligned_alloc(alignment, size)
@@ -26,10 +26,9 @@ typedef std::unique_ptr<float[], aligned_deleter> ScopedAlignedArrayFloat;
 typedef std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter> ScopedAlignedArrayXMVECTOR;
 
 //---------------------------------------------------------------------------------
-#ifdef WIN32
+#ifndef __LINUX__
 struct handle_closer { void operator()(HANDLE h) { assert(h != INVALID_HANDLE_VALUE); if (h) CloseHandle(h); } };
 #else
-//TODO[KV]:Think about this more
 struct handle_closer { void operator()(HANDLE h) { assert(h != INVALID_HANDLE_VALUE); } };
 #endif
 typedef std::unique_ptr<void, handle_closer> ScopedHandle;

@@ -1,9 +1,9 @@
 #pragma once
 
 #if defined(WIN32)
-	#define _CDECL __cdecl
+#define _CDECL __cdecl
 #elif defined(__LINUX__) || defined(_PSY_LINUX_)
-	#define _CDECL __attribute__((__cdecl__))
+#define _CDECL __attribute__((__cdecl__))
 #endif
 
 #if defined(__LINUX__) || defined(_PSY_LINUX_)
@@ -12,6 +12,7 @@
 #include <wchar.h>
 #include <cstdarg>
 
+//Sal annotations
 #define _Use_decl_annotations_
 #define _In_
 #define _In_opt_
@@ -37,8 +38,7 @@
 #define _Success_(expr)
 #define _Analysis_assume_(expr)
 
-#define XM_CONST constexpr
-#define XM_CONSTEXPR constexpr
+//------------------------------------------------------------------------------
 
 #ifndef _HRESULT_DEFINED
 #define _HRESULT_DEFINED
@@ -62,6 +62,8 @@ typedef long HRESULT;
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
 #define HRESULT_FROM_WIN32(x) (x)
 
+//------------------------------------------------------------------------------
+
 #define WINAPI __attribute__((stdcall))
 #define STDMETHOD(method) virtual __attribute__((nothrow,stdcall)) HRESULT method
 #define STDMETHODIMP HRESULT __attribute__((stdcall))
@@ -74,7 +76,7 @@ static int swprintf_s(wchar_t* buff, const wchar_t* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    vswprintf(buff, sizeof(buff)/sizeof(*buff), fmt, args);
+    vswprintf(buff, sizeof(buff) / sizeof(*buff), fmt, args);
 };
 
 typedef unsigned long DWORD;
@@ -83,8 +85,12 @@ typedef void* HANDLE;
 typedef long long LONG_PTR;
 #define INVALID_HANDLE_VALUE ((HANDLE)(LONG_PTR)-1)
 
+//------------------------------------------------------------------------------
+
 //DirectXMath Port
 
+#define XM_CONST constexpr
+#define XM_CONSTEXPR constexpr
 #define XM_CALLCONV __attribute__((fastcall))
 
 namespace DirectX
@@ -99,11 +105,11 @@ XM_CONST float XM_PIDIV4    = 0.785398163f;
 
 struct __vector4
 {
-	union
-	{
-		float vector4_f32[4];
-		uint32_t vector4_u32[4];
-	};
+    union
+    {
+        float vector4_f32[4];
+        uint32_t vector4_u32[4];
+    };
 };
 //------------------------------------------------------------------------------
 // Vector intrinsic: Four 32 bit floating point components aligned on a 16 byte
@@ -129,8 +135,14 @@ __attribute__((align(16))) struct XMVECTORF32
         XMVECTOR v;
     };
 
-    inline operator XMVECTOR() const { return v; }
-    inline operator const float*() const { return f; }
+    inline operator XMVECTOR() const
+    {
+        return v;
+    }
+    inline operator const float* () const
+    {
+        return f;
+    }
 };
 
 __attribute((align(16))) struct XMVECTORU32
@@ -141,7 +153,10 @@ __attribute((align(16))) struct XMVECTORU32
         XMVECTOR v;
     };
 
-    inline operator XMVECTOR() const { return v; }
+    inline operator XMVECTOR() const
+    {
+        return v;
+    }
 };
 
 //------------------------------------------------------------------------------
@@ -201,7 +216,7 @@ struct XMFLOAT4
     XMFLOAT4& operator=(XMFLOAT4&&) = default;
 
     XM_CONSTEXPR XMFLOAT4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
-    explicit XMFLOAT4(_In_reads_(4) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
+    explicit XMFLOAT4(_In_reads_(4) const float* pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 };
 
 // 4D Vector; 32 bit floating point components aligned on a 16 byte boundary
@@ -216,7 +231,7 @@ __attribute__((align(16))) struct XMFLOAT4A : public XMFLOAT4
     XMFLOAT4A& operator=(XMFLOAT4A&&) = default;
 
     XM_CONSTEXPR XMFLOAT4A(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
-    explicit XMFLOAT4A(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
+    explicit XMFLOAT4A(_In_reads_(4) const float* pArray) : XMFLOAT4(pArray) {}
 };
 
 struct XMMATRIX
@@ -243,17 +258,26 @@ struct XMMATRIX
     XMMATRIX(XMMATRIX&&) = default;
     XMMATRIX& operator=(XMMATRIX&&) = default;
 
-    constexpr XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, CXMVECTOR R3) : r{ R0,R1,R2,R3 } {}
+    constexpr XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, CXMVECTOR R3) : r{ R0, R1, R2, R3 } {}
     XMMATRIX(float m00, float m01, float m02, float m03,
              float m10, float m11, float m12, float m13,
              float m20, float m21, float m22, float m23,
              float m30, float m31, float m32, float m33);
-    explicit XMMATRIX(_In_reads_(16) const float *pArray);
+    explicit XMMATRIX(_In_reads_(16) const float* pArray);
 
-    float       operator() (size_t Row, size_t Column) const { return m[Row][Column]; }
-    float&      operator() (size_t Row, size_t Column) { return m[Row][Column]; }
+    float       operator()(size_t Row, size_t Column) const
+    {
+        return m[Row][Column];
+    }
+    float&      operator()(size_t Row, size_t Column)
+    {
+        return m[Row][Column];
+    }
 
-    XMMATRIX    operator+ () const { return *this; }
+    XMMATRIX    operator+ () const
+    {
+        return *this;
+    }
     XMMATRIX    operator- () const;
 
     XMMATRIX&   XM_CALLCONV     operator+= (FXMMATRIX M);
@@ -303,10 +327,16 @@ struct XMFLOAT4X4
           _21(m10), _22(m11), _23(m12), _24(m13),
           _31(m20), _32(m21), _33(m22), _34(m23),
           _41(m30), _42(m31), _43(m32), _44(m33) {}
-    explicit XMFLOAT4X4(_In_reads_(16) const float *pArray);
+    explicit XMFLOAT4X4(_In_reads_(16) const float* pArray);
 
-    float       operator() (size_t Row, size_t Column) const { return m[Row][Column]; }
-    float&      operator() (size_t Row, size_t Column) { return m[Row][Column]; }
+    float       operator()(size_t Row, size_t Column) const
+    {
+        return m[Row][Column];
+    }
+    float&      operator()(size_t Row, size_t Column)
+    {
+        return m[Row][Column];
+    }
 };
 
 #define XMGLOBALCONST const __attribute__((seletany))
@@ -330,9 +360,9 @@ inline XMVECTOR XM_CALLCONV XMVectorZero()
 // Initialize a vector with four floating point values
 inline XMVECTOR XM_CALLCONV XMVectorSet
 (
-    float x, 
-    float y, 
-    float z, 
+    float x,
+    float y,
+    float z,
     float w
 )
 {
@@ -348,10 +378,10 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicate
 )
 {
     XMVECTORF32 vResult;
-    vResult.f[0] = 
-    vResult.f[1] = 
-    vResult.f[2] = 
-    vResult.f[3] = Value;
+    vResult.f[0] =
+        vResult.f[1] =
+            vResult.f[2] =
+                vResult.f[3] = Value;
     return vResult.v;
 }
 
@@ -363,10 +393,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatX
 )
 {
     XMVECTORF32 vResult;
-    vResult.f[0] = 
-    vResult.f[1] = 
-    vResult.f[2] = 
-    vResult.f[3] = V.vector4_f32[0];
+    vResult.f[0] =
+        vResult.f[1] =
+            vResult.f[2] =
+                vResult.f[3] = V.vector4_f32[0];
     return vResult.v;
 }
 
@@ -378,10 +408,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatY
 )
 {
     XMVECTORF32 vResult;
-    vResult.f[0] = 
-    vResult.f[1] = 
-    vResult.f[2] = 
-    vResult.f[3] = V.vector4_f32[1];
+    vResult.f[0] =
+        vResult.f[1] =
+            vResult.f[2] =
+                vResult.f[3] = V.vector4_f32[1];
     return vResult.v;
 }
 
@@ -393,10 +423,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatZ
 )
 {
     XMVECTORF32 vResult;
-    vResult.f[0] = 
-    vResult.f[1] = 
-    vResult.f[2] = 
-    vResult.f[3] = V.vector4_f32[2];
+    vResult.f[0] =
+        vResult.f[1] =
+            vResult.f[2] =
+                vResult.f[3] = V.vector4_f32[2];
     return vResult.v;
 }
 
@@ -408,10 +438,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatW
 )
 {
     XMVECTORF32 vResult;
-    vResult.f[0] = 
-    vResult.f[1] = 
-    vResult.f[2] = 
-    vResult.f[3] = V.vector4_f32[3];
+    vResult.f[0] =
+        vResult.f[1] =
+            vResult.f[2] =
+                vResult.f[3] = V.vector4_f32[3];
     return vResult.v;
 }
 
@@ -435,7 +465,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat2
 
 inline void XM_CALLCONV XMStoreFloat2
 (
-    XMFLOAT2* pDestination, 
+    XMFLOAT2* pDestination,
     FXMVECTOR  V
 )
 {
@@ -464,7 +494,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3
 
 inline void XM_CALLCONV XMStoreFloat3
 (
-    XMFLOAT3* pDestination, 
+    XMFLOAT3* pDestination,
     FXMVECTOR V
 )
 {
@@ -493,7 +523,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat4
 //------------------------------------------------------------------------------
 inline void XM_CALLCONV XMStoreFloat4
 (
-    XMFLOAT4* pDestination, 
+    XMFLOAT4* pDestination,
     FXMVECTOR  V
 )
 {
@@ -508,7 +538,7 @@ inline void XM_CALLCONV XMStoreFloat4
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat4A
 (
-    XMFLOAT4A*   pDestination, 
+    XMFLOAT4A*   pDestination,
     FXMVECTOR     V
 )
 {
@@ -521,25 +551,25 @@ inline void XM_CALLCONV XMStoreFloat4A
     pDestination->w = V.vector4_f32[3];
 }
 //------------------------------------------------------------------------------
-// Return the X component in an FPU register. 
+// Return the X component in an FPU register.
 inline float XM_CALLCONV XMVectorGetX(FXMVECTOR V)
 {
     return V.vector4_f32[0];
 }
 
-// Return the Y component in an FPU register. 
+// Return the Y component in an FPU register.
 inline float XM_CALLCONV XMVectorGetY(FXMVECTOR V)
 {
     return V.vector4_f32[1];
 }
 
-// Return the Z component in an FPU register. 
+// Return the Z component in an FPU register.
 inline float XM_CALLCONV XMVectorGetZ(FXMVECTOR V)
 {
     return V.vector4_f32[2];
 }
 
-// Return the W component in an FPU register. 
+// Return the W component in an FPU register.
 inline float XM_CALLCONV XMVectorGetW(FXMVECTOR V)
 {
     return V.vector4_f32[3];
@@ -549,51 +579,59 @@ inline float XM_CALLCONV XMVectorGetW(FXMVECTOR V)
 inline XMVECTOR XM_CALLCONV XMVectorSetX(FXMVECTOR V, float x)
 {
     XMVECTORF32 U = { { {
-            x,
-            V.vector4_f32[1],
-            V.vector4_f32[2],
-            V.vector4_f32[3]
-        } } };
+                x,
+                V.vector4_f32[1],
+                V.vector4_f32[2],
+                V.vector4_f32[3]
+            }
+        }
+    };
     return U.v;
 }
 // Sets the Y component of a vector to a passed floating point value
 inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y)
 {
     XMVECTORF32 U = { { {
-            V.vector4_f32[0],
-            y,
-            V.vector4_f32[2],
-            V.vector4_f32[3]
-        } } };
+                V.vector4_f32[0],
+                y,
+                V.vector4_f32[2],
+                V.vector4_f32[3]
+            }
+        }
+    };
     return U.v;
 }
 // Sets the Z component of a vector to a passed floating point value
 inline XMVECTOR XM_CALLCONV XMVectorSetZ(FXMVECTOR V, float z)
 {
     XMVECTORF32 U = { { {
-            V.vector4_f32[0],
-            V.vector4_f32[1],
-            z,
-            V.vector4_f32[3]
-        } } };
+                V.vector4_f32[0],
+                V.vector4_f32[1],
+                z,
+                V.vector4_f32[3]
+            }
+        }
+    };
     return U.v;
 }
 // Sets the W component of a vector to a passed floating point value
 inline XMVECTOR XM_CALLCONV XMVectorSetW(FXMVECTOR V, float w)
 {
     XMVECTORF32 U = { { {
-            V.vector4_f32[0],
-            V.vector4_f32[1],
-            V.vector4_f32[2],
-            w
-        } } };
+                V.vector4_f32[0],
+                V.vector4_f32[1],
+                V.vector4_f32[2],
+                w
+            }
+        }
+    };
     return U.v;
 }
 //------------------------------------------------------------------------------
 
 inline bool XM_CALLCONV XMVector4LessOrEqual
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
@@ -604,16 +642,18 @@ inline bool XM_CALLCONV XMVector4LessOrEqual
 
 inline XMVECTOR XM_CALLCONV XMVectorMin
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     XMVECTORF32 Result = { { {
-            (V1.vector4_f32[0] < V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0],
-            (V1.vector4_f32[1] < V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1],
-            (V1.vector4_f32[2] < V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2],
-            (V1.vector4_f32[3] < V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3]
-        } } };
+                (V1.vector4_f32[0] < V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0],
+                (V1.vector4_f32[1] < V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1],
+                (V1.vector4_f32[2] < V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2],
+                (V1.vector4_f32[3] < V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -621,17 +661,19 @@ inline XMVECTOR XM_CALLCONV XMVectorMin
 
 inline XMVECTOR XM_CALLCONV XMVectorMax
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
 
     XMVECTORF32 Result = { { {
-            (V1.vector4_f32[0] > V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0],
-            (V1.vector4_f32[1] > V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1],
-            (V1.vector4_f32[2] > V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2],
-            (V1.vector4_f32[3] > V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3]
-        } } };
+                (V1.vector4_f32[0] > V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0],
+                (V1.vector4_f32[1] > V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1],
+                (V1.vector4_f32[2] > V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2],
+                (V1.vector4_f32[3] > V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -639,8 +681,8 @@ inline XMVECTOR XM_CALLCONV XMVectorMax
 
 inline XMVECTOR XM_CALLCONV XMVectorClamp
 (
-    FXMVECTOR V, 
-    FXMVECTOR Min, 
+    FXMVECTOR V,
+    FXMVECTOR Min,
     FXMVECTOR Max
 )
 {
@@ -660,11 +702,13 @@ inline XMVECTOR XM_CALLCONV XMVectorNegate
 )
 {
     XMVECTORF32 Result = { { {
-            -V.vector4_f32[0],
-            -V.vector4_f32[1],
-            -V.vector4_f32[2],
-            -V.vector4_f32[3]
-        } } };
+                -V.vector4_f32[0],
+                -V.vector4_f32[1],
+                -V.vector4_f32[2],
+                -V.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -672,16 +716,18 @@ inline XMVECTOR XM_CALLCONV XMVectorNegate
 
 inline XMVECTOR XM_CALLCONV XMVectorAdd
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     XMVECTORF32 Result = { { {
-            V1.vector4_f32[0] + V2.vector4_f32[0],
-            V1.vector4_f32[1] + V2.vector4_f32[1],
-            V1.vector4_f32[2] + V2.vector4_f32[2],
-            V1.vector4_f32[3] + V2.vector4_f32[3]
-        } } };
+                V1.vector4_f32[0] + V2.vector4_f32[0],
+                V1.vector4_f32[1] + V2.vector4_f32[1],
+                V1.vector4_f32[2] + V2.vector4_f32[2],
+                V1.vector4_f32[3] + V2.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -689,16 +735,18 @@ inline XMVECTOR XM_CALLCONV XMVectorAdd
 
 inline XMVECTOR XM_CALLCONV XMVectorSubtract
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     XMVECTORF32 Result = { { {
-            V1.vector4_f32[0] - V2.vector4_f32[0],
-            V1.vector4_f32[1] - V2.vector4_f32[1],
-            V1.vector4_f32[2] - V2.vector4_f32[2],
-            V1.vector4_f32[3] - V2.vector4_f32[3]
-        } } };
+                V1.vector4_f32[0] - V2.vector4_f32[0],
+                V1.vector4_f32[1] - V2.vector4_f32[1],
+                V1.vector4_f32[2] - V2.vector4_f32[2],
+                V1.vector4_f32[3] - V2.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -706,16 +754,18 @@ inline XMVECTOR XM_CALLCONV XMVectorSubtract
 
 inline XMVECTOR XM_CALLCONV XMVectorMultiply
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     XMVECTORF32 Result = { { {
-            V1.vector4_f32[0] * V2.vector4_f32[0],
-            V1.vector4_f32[1] * V2.vector4_f32[1],
-            V1.vector4_f32[2] * V2.vector4_f32[2],
-            V1.vector4_f32[3] * V2.vector4_f32[3]
-        } } };
+                V1.vector4_f32[0]* V2.vector4_f32[0],
+                V1.vector4_f32[1]* V2.vector4_f32[1],
+                V1.vector4_f32[2]* V2.vector4_f32[2],
+                V1.vector4_f32[3]* V2.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -723,16 +773,18 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiply
 
 inline XMVECTOR XM_CALLCONV XMVectorDivide
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     XMVECTORF32 Result = { { {
-            V1.vector4_f32[0] / V2.vector4_f32[0],
-            V1.vector4_f32[1] / V2.vector4_f32[1],
-            V1.vector4_f32[2] / V2.vector4_f32[2],
-            V1.vector4_f32[3] / V2.vector4_f32[3]
-        } } };
+                V1.vector4_f32[0] / V2.vector4_f32[0],
+                V1.vector4_f32[1] / V2.vector4_f32[1],
+                V1.vector4_f32[2] / V2.vector4_f32[2],
+                V1.vector4_f32[3] / V2.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -740,16 +792,18 @@ inline XMVECTOR XM_CALLCONV XMVectorDivide
 
 inline XMVECTOR XM_CALLCONV XMVectorScale
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     float    ScaleFactor
 )
 {
     XMVECTORF32 Result = { { {
-            V.vector4_f32[0] * ScaleFactor,
-            V.vector4_f32[1] * ScaleFactor,
-            V.vector4_f32[2] * ScaleFactor,
-            V.vector4_f32[3] * ScaleFactor
-        } } };
+                V.vector4_f32[0]* ScaleFactor,
+                V.vector4_f32[1]* ScaleFactor,
+                V.vector4_f32[2]* ScaleFactor,
+                V.vector4_f32[3]* ScaleFactor
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -761,11 +815,13 @@ inline XMVECTOR XM_CALLCONV XMVectorSqrt
 )
 {
     XMVECTORF32 Result = { { {
-            sqrtf(V.vector4_f32[0]),
-            sqrtf(V.vector4_f32[1]),
-            sqrtf(V.vector4_f32[2]),
-            sqrtf(V.vector4_f32[3])
-        } } };
+                sqrtf(V.vector4_f32[0]),
+                sqrtf(V.vector4_f32[1]),
+                sqrtf(V.vector4_f32[2]),
+                sqrtf(V.vector4_f32[3])
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -773,17 +829,19 @@ inline XMVECTOR XM_CALLCONV XMVectorSqrt
 
 inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
 (
-    FXMVECTOR V1, 
-    FXMVECTOR V2, 
+    FXMVECTOR V1,
+    FXMVECTOR V2,
     FXMVECTOR V3
 )
 {
     XMVECTORF32 Result = { { {
-            V1.vector4_f32[0] * V2.vector4_f32[0] + V3.vector4_f32[0],
-            V1.vector4_f32[1] * V2.vector4_f32[1] + V3.vector4_f32[1],
-            V1.vector4_f32[2] * V2.vector4_f32[2] + V3.vector4_f32[2],
-            V1.vector4_f32[3] * V2.vector4_f32[3] + V3.vector4_f32[3]
-        } } };
+                V1.vector4_f32[0]* V2.vector4_f32[0] + V3.vector4_f32[0],
+                V1.vector4_f32[1]* V2.vector4_f32[1] + V3.vector4_f32[1],
+                V1.vector4_f32[2]* V2.vector4_f32[2] + V3.vector4_f32[2],
+                V1.vector4_f32[3]* V2.vector4_f32[3] + V3.vector4_f32[3]
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -797,11 +855,13 @@ inline XMVECTOR XM_CALLCONV XMVectorACos
     // 7-degree minimax approximation
 
     XMVECTORF32 Result = { { {
-            acosf(V.vector4_f32[0]),
-            acosf(V.vector4_f32[1]),
-            acosf(V.vector4_f32[2]),
-            acosf(V.vector4_f32[3])
-        } } };
+                acosf(V.vector4_f32[0]),
+                acosf(V.vector4_f32[1]),
+                acosf(V.vector4_f32[2]),
+                acosf(V.vector4_f32[3])
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -809,16 +869,18 @@ inline XMVECTOR XM_CALLCONV XMVectorACos
 
 inline XMVECTOR XM_CALLCONV XMVectorMergeXY
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     XMVECTORU32 Result = { { {
-            V1.vector4_u32[0],
-            V2.vector4_u32[0],
-            V1.vector4_u32[1],
-            V2.vector4_u32[1],
-        } } };
+                V1.vector4_u32[0],
+                V2.vector4_u32[0],
+                V1.vector4_u32[1],
+                V2.vector4_u32[1],
+            }
+        }
+    };
     return Result.v;
 }
 
@@ -826,7 +888,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMergeXY
 
 inline bool XM_CALLCONV XMVector2Less
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
@@ -837,7 +899,7 @@ inline bool XM_CALLCONV XMVector2Less
 
 inline bool XM_CALLCONV XMVector3Less
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
@@ -848,7 +910,7 @@ inline bool XM_CALLCONV XMVector3Less
 
 inline bool XM_CALLCONV XMVector3Equal
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
@@ -859,16 +921,16 @@ inline bool XM_CALLCONV XMVector3Equal
 
 inline XMVECTOR XM_CALLCONV XMVector3Dot
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     float fValue = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1] + V1.vector4_f32[2] * V2.vector4_f32[2];
     XMVECTORF32 vResult;
-    vResult.f[0] = 
-    vResult.f[1] = 
-    vResult.f[2] = 
-    vResult.f[3] = fValue;
+    vResult.f[0] =
+        vResult.f[1] =
+            vResult.f[2] =
+                vResult.f[3] = fValue;
     return vResult.v;
 }
 
@@ -876,15 +938,15 @@ inline XMVECTOR XM_CALLCONV XMVector3Dot
 
 inline XMVECTOR XM_CALLCONV XMVector2Dot
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     XMVECTORF32 Result;
     Result.f[0] =
-    Result.f[1] =
-    Result.f[2] =
-    Result.f[3] = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1];
+        Result.f[1] =
+            Result.f[2] =
+                Result.f[3] = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1];
     return Result.v;
 }
 
@@ -892,18 +954,20 @@ inline XMVECTOR XM_CALLCONV XMVector2Dot
 
 inline XMVECTOR XM_CALLCONV XMVector3Cross
 (
-    FXMVECTOR V1, 
+    FXMVECTOR V1,
     FXMVECTOR V2
 )
 {
     // [ V1.y*V2.z - V1.z*V2.y, V1.z*V2.x - V1.x*V2.z, V1.x*V2.y - V1.y*V2.x ]
 
     XMVECTORF32 vResult = { { {
-            (V1.vector4_f32[1] * V2.vector4_f32[2]) - (V1.vector4_f32[2] * V2.vector4_f32[1]),
-            (V1.vector4_f32[2] * V2.vector4_f32[0]) - (V1.vector4_f32[0] * V2.vector4_f32[2]),
-            (V1.vector4_f32[0] * V2.vector4_f32[1]) - (V1.vector4_f32[1] * V2.vector4_f32[0]),
-            0.0f
-        } } };
+                (V1.vector4_f32[1] * V2.vector4_f32[2]) - (V1.vector4_f32[2] * V2.vector4_f32[1]),
+                (V1.vector4_f32[2] * V2.vector4_f32[0]) - (V1.vector4_f32[0] * V2.vector4_f32[2]),
+                (V1.vector4_f32[0] * V2.vector4_f32[1]) - (V1.vector4_f32[1] * V2.vector4_f32[0]),
+                0.0f
+            }
+        }
+    };
     return vResult.v;
 }
 
@@ -962,18 +1026,19 @@ inline XMVECTOR XM_CALLCONV XMVector2Normalize
     FXMVECTOR V
 )
 {
-    XMVECTOR vResult = XMVector2Length( V );
+    XMVECTOR vResult = XMVector2Length(V);
     float fLength = vResult.vector4_f32[0];
 
     // Prevent divide by zero
-    if (fLength > 0) {
-        fLength = 1.0f/fLength;
+    if (fLength > 0)
+    {
+        fLength = 1.0f / fLength;
     }
-    
-    vResult.vector4_f32[0] = V.vector4_f32[0]*fLength;
-    vResult.vector4_f32[1] = V.vector4_f32[1]*fLength;
-    vResult.vector4_f32[2] = V.vector4_f32[2]*fLength;
-    vResult.vector4_f32[3] = V.vector4_f32[3]*fLength;
+
+    vResult.vector4_f32[0] = V.vector4_f32[0] * fLength;
+    vResult.vector4_f32[1] = V.vector4_f32[1] * fLength;
+    vResult.vector4_f32[2] = V.vector4_f32[2] * fLength;
+    vResult.vector4_f32[3] = V.vector4_f32[3] * fLength;
     return vResult;
 }
 
@@ -987,18 +1052,19 @@ inline XMVECTOR XM_CALLCONV XMVector3Normalize
     float fLength;
     XMVECTOR vResult;
 
-    vResult = XMVector3Length( V );
+    vResult = XMVector3Length(V);
     fLength = vResult.vector4_f32[0];
 
     // Prevent divide by zero
-    if (fLength > 0) {
-        fLength = 1.0f/fLength;
+    if (fLength > 0)
+    {
+        fLength = 1.0f / fLength;
     }
-    
-    vResult.vector4_f32[0] = V.vector4_f32[0]*fLength;
-    vResult.vector4_f32[1] = V.vector4_f32[1]*fLength;
-    vResult.vector4_f32[2] = V.vector4_f32[2]*fLength;
-    vResult.vector4_f32[3] = V.vector4_f32[3]*fLength;
+
+    vResult.vector4_f32[0] = V.vector4_f32[0] * fLength;
+    vResult.vector4_f32[1] = V.vector4_f32[1] * fLength;
+    vResult.vector4_f32[2] = V.vector4_f32[2] * fLength;
+    vResult.vector4_f32[3] = V.vector4_f32[3] * fLength;
     return vResult;
 }
 
@@ -1006,7 +1072,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Normalize
 
 inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
 (
-    FXMVECTOR V, 
+    FXMVECTOR V,
     FXMMATRIX M
 )
 {
@@ -1017,7 +1083,7 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
 
     XMVECTOR W = XMVectorSplatW(Result);
-    return XMVectorDivide( Result, W );
+    return XMVectorDivide(Result, W);
 }
 
 //------------------------------------------------------------------------------
@@ -1031,10 +1097,10 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
     uint32_t PermuteW
 )
 {
-    assert( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
-    _Analysis_assume_( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
+    assert(PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7);
+    _Analysis_assume_(PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7);
 
-    const uint32_t *aPtr[2];
+    const uint32_t* aPtr[2];
     aPtr[0] = reinterpret_cast<const uint32_t*>(&V1);
     aPtr[1] = reinterpret_cast<const uint32_t*>(&V2);
 
@@ -1064,11 +1130,11 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
 
 inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
 (
-    XMFLOAT2*       pOutputStream, 
-    size_t          OutputStride, 
-    const XMFLOAT2* pInputStream, 
-    size_t          InputStride, 
-    size_t          VectorCount, 
+    XMFLOAT2*       pOutputStream,
+    size_t          OutputStride,
+    const XMFLOAT2* pInputStream,
+    size_t          InputStride,
+    size_t          VectorCount,
     FXMMATRIX       M
 )
 {
@@ -1101,18 +1167,18 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
 
         Result = XMVectorDivide(Result, W);
 
-        #ifdef _PREFAST_
-        #pragma prefast(push)
-        #pragma prefast(disable : 26015, "PREfast noise: Esp:1307" )
-        #endif
+#ifdef _PREFAST_
+#pragma prefast(push)
+#pragma prefast(disable : 26015, "PREfast noise: Esp:1307" )
+#endif
 
         XMStoreFloat2(reinterpret_cast<XMFLOAT2*>(pOutputVector), Result);
 
-        #ifdef _PREFAST_
-        #pragma prefast(pop)
-        #endif
+#ifdef _PREFAST_
+#pragma prefast(pop)
+#endif
 
-        pInputVector += InputStride; 
+        pInputVector += InputStride;
         pOutputVector += OutputStride;
     }
 
@@ -1153,7 +1219,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x4
 //------------------------------------------------------------------------------
 inline void XM_CALLCONV XMStoreFloat4x4
 (
-    XMFLOAT4X4* pDestination, 
+    XMFLOAT4X4* pDestination,
     FXMMATRIX M
 )
 {
@@ -1196,8 +1262,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixIdentity()
 
 inline XMMATRIX XM_CALLCONV XMMatrixScaling
 (
-    float ScaleX, 
-    float ScaleY, 
+    float ScaleX,
+    float ScaleY,
     float ScaleZ
 )
 {
@@ -1228,8 +1294,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixScaling
 
 inline XMMATRIX XM_CALLCONV XMMatrixTranslation
 (
-    float OffsetX, 
-    float OffsetY, 
+    float OffsetX,
+    float OffsetY,
     float OffsetZ
 )
 {
@@ -1269,7 +1335,7 @@ inline void XMScalarSinCos
     assert(pCos);
 
     // Map Value to y in [-pi,pi], x = 2*pi*quotient + remainder.
-    float quotient = XM_1DIV2PI*Value;
+    float quotient = XM_1DIV2PI * Value;
     if (Value >= 0.0f)
     {
         quotient = static_cast<float>(static_cast<int>(quotient + 0.5f));
@@ -1278,7 +1344,7 @@ inline void XMScalarSinCos
     {
         quotient = static_cast<float>(static_cast<int>(quotient - 0.5f));
     }
-    float y = Value - XM_2PI*quotient;
+    float y = Value - XM_2PI * quotient;
 
     // Map y to [-pi/2,pi/2] with sin(y) = sin(Value).
     float sign;
@@ -1300,11 +1366,11 @@ inline void XMScalarSinCos
     float y2 = y * y;
 
     // 11-degree minimax approximation
-    *pSin = ( ( ( ( (-2.3889859e-08f * y2 + 2.7525562e-06f) * y2 - 0.00019840874f ) * y2 + 0.0083333310f ) * y2 - 0.16666667f ) * y2 + 1.0f ) * y;
+    *pSin = (((((-2.3889859e-08f * y2 + 2.7525562e-06f) * y2 - 0.00019840874f) * y2 + 0.0083333310f) * y2 - 0.16666667f) * y2 + 1.0f) * y;
 
     // 10-degree minimax approximation
-    float p = ( ( ( ( -2.6051615e-07f * y2 + 2.4760495e-05f ) * y2 - 0.0013888378f ) * y2 + 0.041666638f ) * y2 - 0.5f ) * y2 + 1.0f;
-    *pCos = sign*p;
+    float p = ((((-2.6051615e-07f * y2 + 2.4760495e-05f) * y2 - 0.0013888378f) * y2 + 0.041666638f) * y2 - 0.5f) * y2 + 1.0f;
+    *pCos = sign * p;
 }
 
 //------------------------------------------------------------------------------
@@ -1345,7 +1411,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationZ
 // Perform a 4x4 matrix multiply by a 4x4 matrix
 inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 (
-    FXMMATRIX M1, 
+    FXMMATRIX M1,
     CXMMATRIX M2
 )
 {
@@ -1356,35 +1422,35 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     float z = M1.m[0][2];
     float w = M1.m[0][3];
     // Perform the operation on the first row
-    mResult.m[0][0] = (M2.m[0][0]*x)+(M2.m[1][0]*y)+(M2.m[2][0]*z)+(M2.m[3][0]*w);
-    mResult.m[0][1] = (M2.m[0][1]*x)+(M2.m[1][1]*y)+(M2.m[2][1]*z)+(M2.m[3][1]*w);
-    mResult.m[0][2] = (M2.m[0][2]*x)+(M2.m[1][2]*y)+(M2.m[2][2]*z)+(M2.m[3][2]*w);
-    mResult.m[0][3] = (M2.m[0][3]*x)+(M2.m[1][3]*y)+(M2.m[2][3]*z)+(M2.m[3][3]*w);
+    mResult.m[0][0] = (M2.m[0][0] * x) + (M2.m[1][0] * y) + (M2.m[2][0] * z) + (M2.m[3][0] * w);
+    mResult.m[0][1] = (M2.m[0][1] * x) + (M2.m[1][1] * y) + (M2.m[2][1] * z) + (M2.m[3][1] * w);
+    mResult.m[0][2] = (M2.m[0][2] * x) + (M2.m[1][2] * y) + (M2.m[2][2] * z) + (M2.m[3][2] * w);
+    mResult.m[0][3] = (M2.m[0][3] * x) + (M2.m[1][3] * y) + (M2.m[2][3] * z) + (M2.m[3][3] * w);
     // Repeat for all the other rows
     x = M1.m[1][0];
     y = M1.m[1][1];
     z = M1.m[1][2];
     w = M1.m[1][3];
-    mResult.m[1][0] = (M2.m[0][0]*x)+(M2.m[1][0]*y)+(M2.m[2][0]*z)+(M2.m[3][0]*w);
-    mResult.m[1][1] = (M2.m[0][1]*x)+(M2.m[1][1]*y)+(M2.m[2][1]*z)+(M2.m[3][1]*w);
-    mResult.m[1][2] = (M2.m[0][2]*x)+(M2.m[1][2]*y)+(M2.m[2][2]*z)+(M2.m[3][2]*w);
-    mResult.m[1][3] = (M2.m[0][3]*x)+(M2.m[1][3]*y)+(M2.m[2][3]*z)+(M2.m[3][3]*w);
+    mResult.m[1][0] = (M2.m[0][0] * x) + (M2.m[1][0] * y) + (M2.m[2][0] * z) + (M2.m[3][0] * w);
+    mResult.m[1][1] = (M2.m[0][1] * x) + (M2.m[1][1] * y) + (M2.m[2][1] * z) + (M2.m[3][1] * w);
+    mResult.m[1][2] = (M2.m[0][2] * x) + (M2.m[1][2] * y) + (M2.m[2][2] * z) + (M2.m[3][2] * w);
+    mResult.m[1][3] = (M2.m[0][3] * x) + (M2.m[1][3] * y) + (M2.m[2][3] * z) + (M2.m[3][3] * w);
     x = M1.m[2][0];
     y = M1.m[2][1];
     z = M1.m[2][2];
     w = M1.m[2][3];
-    mResult.m[2][0] = (M2.m[0][0]*x)+(M2.m[1][0]*y)+(M2.m[2][0]*z)+(M2.m[3][0]*w);
-    mResult.m[2][1] = (M2.m[0][1]*x)+(M2.m[1][1]*y)+(M2.m[2][1]*z)+(M2.m[3][1]*w);
-    mResult.m[2][2] = (M2.m[0][2]*x)+(M2.m[1][2]*y)+(M2.m[2][2]*z)+(M2.m[3][2]*w);
-    mResult.m[2][3] = (M2.m[0][3]*x)+(M2.m[1][3]*y)+(M2.m[2][3]*z)+(M2.m[3][3]*w);
+    mResult.m[2][0] = (M2.m[0][0] * x) + (M2.m[1][0] * y) + (M2.m[2][0] * z) + (M2.m[3][0] * w);
+    mResult.m[2][1] = (M2.m[0][1] * x) + (M2.m[1][1] * y) + (M2.m[2][1] * z) + (M2.m[3][1] * w);
+    mResult.m[2][2] = (M2.m[0][2] * x) + (M2.m[1][2] * y) + (M2.m[2][2] * z) + (M2.m[3][2] * w);
+    mResult.m[2][3] = (M2.m[0][3] * x) + (M2.m[1][3] * y) + (M2.m[2][3] * z) + (M2.m[3][3] * w);
     x = M1.m[3][0];
     y = M1.m[3][1];
     z = M1.m[3][2];
     w = M1.m[3][3];
-    mResult.m[3][0] = (M2.m[0][0]*x)+(M2.m[1][0]*y)+(M2.m[2][0]*z)+(M2.m[3][0]*w);
-    mResult.m[3][1] = (M2.m[0][1]*x)+(M2.m[1][1]*y)+(M2.m[2][1]*z)+(M2.m[3][1]*w);
-    mResult.m[3][2] = (M2.m[0][2]*x)+(M2.m[1][2]*y)+(M2.m[2][2]*z)+(M2.m[3][2]*w);
-    mResult.m[3][3] = (M2.m[0][3]*x)+(M2.m[1][3]*y)+(M2.m[2][3]*z)+(M2.m[3][3]*w);
+    mResult.m[3][0] = (M2.m[0][0] * x) + (M2.m[1][0] * y) + (M2.m[2][0] * z) + (M2.m[3][0] * w);
+    mResult.m[3][1] = (M2.m[0][1] * x) + (M2.m[1][1] * y) + (M2.m[2][1] * z) + (M2.m[3][1] * w);
+    mResult.m[3][2] = (M2.m[0][2] * x) + (M2.m[1][2] * y) + (M2.m[2][2] * z) + (M2.m[3][2] * w);
+    mResult.m[3][3] = (M2.m[0][3] * x) + (M2.m[1][3] * y) + (M2.m[2][3] * z) + (M2.m[3][3] * w);
     return mResult;
 }
 
@@ -1461,7 +1527,7 @@ inline XMVECTOR& XM_CALLCONV operator/=
     FXMVECTOR       V2
 )
 {
-    V1 = XMVectorDivide(V1,V2);
+    V1 = XMVectorDivide(V1, V2);
     return V1;
 }
 
@@ -1485,7 +1551,7 @@ inline XMVECTOR& operator/=
     const float S
 )
 {
-    XMVECTOR vS = XMVectorReplicate( S );
+    XMVECTOR vS = XMVectorReplicate(S);
     V = XMVectorDivide(V, vS);
     return V;
 }
@@ -1531,7 +1597,7 @@ inline XMVECTOR XM_CALLCONV operator/
     FXMVECTOR V2
 )
 {
-    return XMVectorDivide(V1,V2);
+    return XMVectorDivide(V1, V2);
 }
 
 //------------------------------------------------------------------------------
@@ -1553,7 +1619,7 @@ inline XMVECTOR XM_CALLCONV operator/
     const float    S
 )
 {
-    XMVECTOR vS = XMVectorReplicate( S );
+    XMVECTOR vS = XMVectorReplicate(S);
     return XMVectorDivide(V, vS);
 }
 
@@ -1562,7 +1628,7 @@ inline XMVECTOR XM_CALLCONV operator/
 inline XMVECTOR XM_CALLCONV operator*
 (
     float           S,
-    FXMVECTOR  	    V
+    FXMVECTOR       V
 )
 {
     return XMVectorScale(V, S);
@@ -1572,17 +1638,16 @@ inline XMVECTOR XM_CALLCONV operator*
 
 // General permute template
 template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t PermuteW>
-    inline XMVECTOR     XM_CALLCONV     XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2)
+inline XMVECTOR     XM_CALLCONV     XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2)
 {
     static_assert(PermuteX <= 7, "PermuteX template parameter out of range");
     static_assert(PermuteY <= 7, "PermuteY template parameter out of range");
     static_assert(PermuteZ <= 7, "PermuteZ template parameter out of range");
     static_assert(PermuteW <= 7, "PermuteW template parameter out of range");
 
-    return XMVectorPermute( V1, V2, PermuteX, PermuteY, PermuteZ, PermuteW );
+    return XMVectorPermute(V1, V2, PermuteX, PermuteY, PermuteZ, PermuteW);
 }
 
 } /* namespace DirectX */
-
 
 #endif //__LINUX__

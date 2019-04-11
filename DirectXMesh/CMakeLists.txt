@@ -28,3 +28,7 @@ set (DX_MESH_HDR
     )
 
 add_library(DirectXMesh STATIC ${DX_MESH_SRC} ${DX_MESH_HDR})
+set_target_properties(DirectXMesh PROPERTIES
+                      COMPILE_PDB_NAME "DirectXMesh"
+                      COMPILE_PDB_NAME_DEBUG "DirectXMesh${CMAKE_DEBUG_POSTFIX}"
+                      )
