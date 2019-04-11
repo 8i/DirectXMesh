@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 
-#ifndef __LINUX__
+#if !defined(__LINUX__) && !defined(_PSY_LINUX_)
 #if !defined(__d3d11_h__) && !defined(__d3d11_x_h__) && !defined(__d3d12_h__) && !defined(__d3d12_x_h__)
 #if defined(_XBOX_ONE) && defined(_TITLE)
 #include <d3d11_x.h>
@@ -80,7 +80,7 @@ namespace DirectX
 
     //---------------------------------------------------------------------------------
     // Vertex Buffer Reader/Writer
-#ifndef __LINUX__
+#if !defined(__LINUX__) && !defined(_PSY_LINUX_)
     class VBReader
     {
     public:
