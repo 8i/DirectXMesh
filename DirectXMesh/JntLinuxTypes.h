@@ -1,9 +1,9 @@
 #pragma once
 
 #if defined(WIN32)
-#define _CDECL __cdecl
+#define JNT_CDECL __cdecl
 #elif defined(__LINUX__) || defined(_PSY_LINUX_)
-#define _CDECL __attribute__((__cdecl__))
+#define JNT_CDECL __attribute__((__cdecl__))
 #endif
 
 #if defined(__LINUX__) || defined(_PSY_LINUX_)
