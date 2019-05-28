@@ -11,6 +11,9 @@
 #include <dxgiformat.h>
 #include <wchar.h>
 #include <cstdarg>
+#include <cstdint>
+#include <assert.h>
+#include <math.h>
 
 //Sal annotations
 #define _Use_decl_annotations_
