@@ -63,7 +63,13 @@ typedef long HRESULT;
 
 #define SUCCEEDED(hr) (((HRESULT)(hr)) >= 0)
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
-#define HRESULT_FROM_WIN32(x) (x)
+#define FACILITY_WIN32                   7
+static HRESULT HRESULT_FROM_WIN32(unsigned long x)
+{
+    return (HRESULT)(x) <= 0 ?
+           (HRESULT)(x) :
+           (HRESULT)(((x) & 0x0000FFFF) | (FACILITY_WIN32 << 16) | 0x80000000);
+}
 
 //------------------------------------------------------------------------------
 
@@ -1654,3 +1660,5 @@ inline XMVECTOR     XM_CALLCONV     XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2)
 } /* namespace DirectX */
 
 #endif //__LINUX__
+
+#define HRESULT_FROM_32BIT(x) HRESULT_FROM_WIN32(x)
