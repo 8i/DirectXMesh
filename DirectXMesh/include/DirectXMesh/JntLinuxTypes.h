@@ -8,7 +8,7 @@
 
 #if defined(__LINUX__) || defined(_PSY_LINUX_)
 
-#include <dxgiformat.h>
+#include <DirectXMesh/dxgiformat.h>
 #include <wchar.h>
 #include <cstdarg>
 #include <cstdint>

@@ -93,7 +93,7 @@
 #include <cstring>
 #endif
 
-#include "DirectXMesh.h"
+#include "DirectXMesh/DirectXMesh.h"
 
 #include "scoped.h"
 
