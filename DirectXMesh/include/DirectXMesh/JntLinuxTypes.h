@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JNT_LINUX_TYPES_H
+#define JNT_LINUX_TYPES_H
 
 #if defined(WIN32)
 #define JNT_CDECL __cdecl
@@ -8,7 +9,7 @@
 
 #if defined(__LINUX__) || defined(_PSY_LINUX_)
 
-#include <dxgiformat.h>
+#include <DirectXMesh/dxgiformat.h>
 #include <wchar.h>
 #include <cstdarg>
 #include <cstdint>
@@ -45,7 +46,7 @@
 
 #ifndef _HRESULT_DEFINED
 #define _HRESULT_DEFINED
-typedef long HRESULT;
+typedef int32_t HRESULT;
 #endif // !_HRESULT_DEFINED
 
 //HRESULT Codes
@@ -1662,3 +1663,5 @@ inline XMVECTOR     XM_CALLCONV     XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2)
 #endif //__LINUX__
 
 #define HRESULT_FROM_32BIT(x) HRESULT_FROM_WIN32(x)
+
+#endif //JNT_LINUX_TYPES_H
