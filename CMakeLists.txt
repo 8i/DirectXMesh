@@ -76,6 +76,8 @@ endif()
 
 if ((NOT WIN32) OR VCPKG_TOOLCHAIN)
     message("INFO: Using VCPKG for DirectX-Headers and DirectXMath.")
+    list(APPEND CMAKE_PREFIX_PATH "/home/kiran/repos/DirectX-Headers/build/redist")
+    list(APPEND CMAKE_PREFIX_PATH "/home/kiran/repos/DirectXMath/build/redist")
     find_package(directx-headers CONFIG REQUIRED)
     find_package(directxmath CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectX-Headers Microsoft::DirectXMath)
